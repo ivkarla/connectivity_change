@@ -58,8 +58,6 @@ for subid in subjects:
     if eeg.fs == 512: limit = 512
     else: limit = 500
 
-    """PREPROCESSING""" 
-
     SET(eeg, _as='N')
     SET(eeg, 'EEG inicio', 'S')
     SET(eeg, 'EEG fin', 'E', epoch.END)
@@ -77,39 +75,6 @@ for subid in subjects:
     elif window == "3" or window == "4":
         pre = int(round(units*.3))
         eeg.tag(('S', 'E'), S=range(-pre,pre,1), E=range(0,-units,-1)) 
-
-    a, ai = eeg.sample.get(A, items)   
-    b, bi = eeg.sample.get(B, items)   
-    i = ai+bi                         
-    x = a + b                         
-    y = [0]*items + [1]*items          
-    
-    esppe = [preprocess(eeg, ep, limit) for i,ep in enumerate(x)] 
-    print("resampled: ", esppe[0].shape)
-
-    '''filtering frequency bands'''
-    fesppe = []
-    if Bands: fesppe = [band(e, bands, esppe[0].shape[1]) for e in esppe]
-    elif not Bands: fesppe = esppe
-
-    '''connectivity analysis'''
-    result = struct(x=np.array(x), y=np.array(y), i=np.array(i))
-    if dict_methods[method_idx] == spectral_coherence:
-        result._set(X = connectivity_analysis(fesppe,spectral_coherence,fs=fesppe[0].shape[1],imag=imag))
-    elif dict_methods[method_idx] == PEC: 
-        result._set(X = [PEC(ep,i+1) for i,ep in enumerate(fesppe)])
-    elif dict_methods[method_idx] == phaselock:
-        result._set(X = connectivity_analysis(fesppe, phaselock))
-    elif dict_methods[method_idx] == phaselag:
-        result._set(X = connectivity_analysis(fesppe, phaselag))
-    elif dict_methods[method_idx] == cross_correlation:
-        result._set(X = connectivity_analysis(fesppe, cross_correlation))
-    elif dict_methods[method_idx] == PAC:
-        result._set(X = connectivity_analysis(fesppe, PAC, True, fesppe[0].shape[1]))
-
-    '''saving preprocessed data'''
-    if Bands: rec(result).save(preprocessed+"{}/".format(method_code[method_idx]+ext)+"{}/".format(str(bands).replace(" ",""))+'.'.join(['-'.join([subid,window_code[window]]),'prep']))
-    elif not Bands: rec(result).save(preprocessed+"{}/".format(method_code[method_idx]+ext)+'.'.join(['-'.join([subid,window_code[window]]),'prep']))
 
     """ANALYSIS"""
     
