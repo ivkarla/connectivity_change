@@ -1,1 +1,1 @@
-# connectivity_change
+This repository contains code and data to reproduce the results from the manuscript "A novel way to use cross-validation to measure connectivity by machine learning allows epilepsy surgery outcome prediction", by Karla Ivankovic, Alessandro Principe, Justo Montoya, Linus Manubens-Gil, Riccardo Zucca, Mara Dierssen, Rodrigo Rocamora
